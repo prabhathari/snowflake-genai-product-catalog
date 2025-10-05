@@ -211,9 +211,8 @@ MIT License - Free to use for learning and portfolio projects
 ## 👤 Author
 
 **Your Name**  
-📧 Email: your-email@example.com  
-🔗 LinkedIn: [your-linkedin](https://linkedin.com/in/your-profile)  
-🌐 Portfolio: [your-website](https://your-website.com)  
+📧 Email: prabhat.hari@gmail.com  
+🔗 LinkedIn: [your-linkedin](www.linkedin.com/in/prabhat-yenisetti-7366b41b)  
 💼 GitHub: [@prabhathari](https://github.com/prabhathari)
 
 ---
