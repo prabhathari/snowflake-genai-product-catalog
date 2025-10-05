@@ -1,0 +1,55 @@
+-- ============================================
+-- SEMANTIC SEARCH
+-- Create vector embeddings and search procedure
+-- ============================================
+
+USE ROLE ACCOUNTADMIN;
+USE DATABASE PRODUCT_CATALOG_AI;
+USE SCHEMA CATALOG;
+USE WAREHOUSE CATALOG_WH;
+
+-- Create table with embeddings
+CREATE OR REPLACE TABLE PRODUCTS_WITH_EMBEDDINGS AS
+SELECT 
+    *,
+    SNOWFLAKE.CORTEX.EMBED_TEXT_768(
+        'e5-base-v2',
+        CLEAN_PRODUCT_NAME || ' ' || ENHANCED_DESCRIPTION
+    ) as EMBEDDING
+FROM CATEGORIZED_PRODUCTS;
+
+-- Verify
+SELECT 'PRODUCTS_WITH_EMBEDDINGS: ' || COUNT(*) || ' rows created' as STATUS 
+FROM PRODUCTS_WITH_EMBEDDINGS;
+
+SELECT PRODUCT_ID, CLEAN_PRODUCT_NAME, 'Vector created' as STATUS
+FROM PRODUCTS_WITH_EMBEDDINGS
+LIMIT 5;
+
+-- Create semantic search procedure
+CREATE OR REPLACE PROCEDURE SEMANTIC_SEARCH(search_query STRING, top_n INT)
+RETURNS TABLE (PRODUCT_ID INT, CLEAN_PRODUCT_NAME VARCHAR, ENHANCED_DESCRIPTION VARCHAR, CATEGORY VARCHAR, PRICE FLOAT, SIMILARITY_SCORE FLOAT)
+LANGUAGE SQL
+AS
+DECLARE
+    res RESULTSET;
+BEGIN
+    res := (
+        SELECT 
+            p.PRODUCT_ID,
+            p.CLEAN_PRODUCT_NAME,
+            p.ENHANCED_DESCRIPTION,
+            p.CATEGORY,
+            p.PRICE::FLOAT as PRICE,
+            VECTOR_COSINE_SIMILARITY(p.EMBEDDING, SNOWFLAKE.CORTEX.EMBED_TEXT_768('e5-base-v2', :search_query)) as SIMILARITY_SCORE
+        FROM PRODUCTS_WITH_EMBEDDINGS p
+        ORDER BY SIMILARITY_SCORE DESC
+        LIMIT :top_n
+    );
+    RETURN TABLE(res);
+END;
+
+-- Test
+CALL SEMANTIC_SEARCH('laptop for coding', 3);
+
+SELECT 'Semantic search setup complete!' as STATUS;
