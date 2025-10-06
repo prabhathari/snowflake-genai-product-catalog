@@ -1,6 +1,6 @@
 # 🤖 AI-Powered Product Catalog with Snowflake Cortex
 
-A production-ready product catalog system powered by Snowflake Cortex AI, featuring semantic search, RAG-based Q&A, and automated marketing content generation.
+A complete Snowflake Cortex AI implementation showcasing semantic search, RAG Q&A capabilities, and AI-powered marketing automation using real product data.
 
 ![Snowflake](https://img.shields.io/badge/Snowflake-Cortex_AI-blue)
 ![Python](https://img.shields.io/badge/Python-3.8+-green)
